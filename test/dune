@@ -1,0 +1,3 @@
+(tests
+ (names boilerplate)
+ (libraries httpresque alcotest))
