@@ -15,9 +15,17 @@ let getServer addr_string port =
       max_concurrent = 100;
   }
 
+let string_of_sockaddr = function
+  | Unix.ADDR_UNIX s -> "Unix("^s^")"
+  | Unix.ADDR_INET (addr, port) -> "Inet(" ^(Unix.string_of_inet_addr addr) ^ ":" ^ string_of_int port ^ ")"
+
+let rec accept_next_request (server: server) =
+  let (_, addr)= Unix.accept server.socket in
+  print_endline ("Got a new connection from " ^ (string_of_sockaddr addr) );
+  accept_next_request server
 
 let run_server (server: server) =
   Unix.bind server.socket server.addr;
   Unix.listen server.socket server.max_concurrent;
-  print_endline "Server is now running and ready to accept connections"
-(* TODO: actually accept connections and stop lying like that*)
+  print_endline "Server is now running and ready to accept connections";
+  accept_next_request server
