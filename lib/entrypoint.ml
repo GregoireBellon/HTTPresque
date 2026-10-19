@@ -1,3 +1,4 @@
+open Response
 
 type server = {
   socket: Unix.file_descr;
@@ -19,13 +20,21 @@ let string_of_sockaddr = function
   | Unix.ADDR_UNIX s -> "Unix("^s^")"
   | Unix.ADDR_INET (addr, port) -> "Inet(" ^(Unix.string_of_inet_addr addr) ^ ":" ^ string_of_int port ^ ")"
 
-let rec accept_next_request (server: server) =
-  let (_, addr)= Unix.accept server.socket in
+
+let rec handle_request (server: server) (client: Unix.file_descr * Unix.sockaddr) =
+  let (sock, addr) = client in
   print_endline ("Got a new connection from " ^ (string_of_sockaddr addr) );
+  let response = Response.build_response {message=(Some "OK"); status=(Some 200)} |> Bytes.of_string in
+  let _ = Unix.write sock  response 0 (Bytes.length response) in
+  Unix.close sock
+
+let rec accept_next_request (server: server) =
+  let client = Unix.accept server.socket in
+  handle_request server client;
   accept_next_request server
 
 let run_server (server: server) =
   Unix.bind server.socket server.addr;
   Unix.listen server.socket server.max_concurrent;
-  print_endline "Server is now running and ready to accept connections";
+  "Server is now running and ready to accept connections on " ^ (string_of_sockaddr server.addr) |> print_endline;
   accept_next_request server
