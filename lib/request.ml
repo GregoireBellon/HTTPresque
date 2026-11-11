@@ -1,4 +1,84 @@
 
+(* https://www.rfc-editor.org/info/rfc9110/#name-methods *)
+
+type parsing_error =
+| Invalid_token of string
+| Invalid_syntax of string
+
+
+type http_method =
+    | Get
+    | Head
+    | Post
+    | Put
+    | Delete
+    | Connect
+    | Option
+    | Trace
+
+
+let http_method_of_str = function
+  | "GET" -> Ok Get
+  | "HEAD" -> Ok Head
+  | "POST" -> Ok Post
+  | "PUT" -> Ok Put
+  | "DELETE" -> Ok Delete
+  | "CONNECT" -> Ok Connect
+  | "OPTION" -> Ok Option
+  | "TRACE" -> Ok Trace
+  |_ -> Error (Invalid_token "Expected a valid HTTP method")
+
+
+type request_target =
+  | Origin of string
+  | Absolute of string
+  | Authority
+  | Asterix
+
+
+type headers = (string * string) list
+
+type t = {
+  hmethod: http_method;
+  target: request_target;
+  version: string
+}
+
+(* https://datatracker.ietf.org/doc/html/rfc9112#name-request-line *)
+let parse_request_line inp =
+  match String.split_on_char  ' ' inp with
+    [met; tar; ver] ->
+
+    let parsed_method = http_method_of_str met in
+    let parsed_tar = Ok tar in
+    let parsed_ver = Ok ver in
+
+    let errs =
+      []
+      |> Utils.collect_errs parsed_method
+      |> Utils.collect_errs parsed_tar
+      |> Utils.collect_errs parsed_ver
+    in
+    if errs = [] then Ok {
+      hmethod = Result.get_ok parsed_method;
+      target = Absolute (Result.get_ok parsed_tar);
+      version = Result.get_ok parsed_ver
+    } else Error errs
+
+  | _ -> Error [(Invalid_syntax "Expected `method SP request-target SP HTTP-version` kind of response")];;
+
+let parse_headers (headers_str: string) =
+  (* let rec parse_next curr_headers remaining_str = () in *)
+  (* String.split_on_char "" *)
+  (* turn the str into a string seq  *)
+  (* turn the str seq into string pair *)
+  []
+
+(* type t =
+
+} *)
+
+
 
 let rec handle_request (server: Server.server) (client: Unix.file_descr * Unix.sockaddr) =
   let (sock, addr) = client in
