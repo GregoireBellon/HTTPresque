@@ -2,16 +2,19 @@
 opam-version: "2.0"
 synopsis: "Presque an HTTP server"
 description: "A toy project following the codecrafter HTTP server tracks."
-maintainer: ["Maintainer Name <maintainer@example.com>"]
-authors: ["Author Name <gregoire.bellon@outlook.fr>"]
+maintainer: ["Gregoire Bellon <gregoire.bellon@outlook.fr>"]
+authors: ["Gregoire Bellon <gregoire.bellon@outlook.fr>"]
 license: "Apache-2.0"
-homepage: "https://github.com/username/reponame"
-doc: "https://url/to/documentation"
-bug-reports: "https://github.com/username/reponame/issues"
+homepage: "https://github.com/GregoireBellon/HTTPresque"
+bug-reports: "https://github.com/GregoireBellon/HTTPresque/issues"
 depends: [
-  "dune" {>= "3.21"}
-  "ocaml"
+  "dune" {>= "3.24"}
+  "ocaml" {>= "5.3.0"}
   "alcotest" {with-test}
+  "utop" {with-dev-setup}
+  "ocp-indent" {with-dev-setup}
+  "ocamlformat" {with-dev-setup}
+  "ocaml-lsp-server" {with-dev-setup}
   "odoc" {with-doc}
 ]
 build: [
@@ -28,5 +31,5 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/username/reponame.git"
+dev-repo: "git+https://github.com/GregoireBellon/HTTPresque.git"
 x-maintenance-intent: ["(latest)"]
