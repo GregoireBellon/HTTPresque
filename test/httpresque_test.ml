@@ -1,1 +1,1 @@
-let () = Alcotest.run "Httpresque" []
+let () = Alcotest.run "Httpresque" [ Method_test.cases ]

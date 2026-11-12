@@ -11,7 +11,7 @@
 *)
 
 (** A type that describes what an HTTP method can be. *)
-type t = Get | Head | Post | Put | Delete | Connect | Option | Trace
+type t = Get | Head | Post | Put | Delete | Connect | Options | Trace
 
 (** Errors that can occurs during method validation. See {!val:from_string}. *)
 type error = Unknown of string
@@ -26,3 +26,11 @@ val to_string : t -> string
 
 val equal : t -> t -> bool
 (** [equal m1 m2] equality between [m1] and [m2]. *)
+
+(** {2 Errors} *)
+
+val error_equal : error -> error -> bool
+(** [error_equal e1 e2] equalities betweens errors *)
+
+val error_to_string : error -> string
+(** [error_to_string err] give string representation for [err]. *)

@@ -7,7 +7,7 @@ type t =
   | Put
   | Delete
   | Connect
-  | Option
+  | Options
   | Trace
 
 (* NOTE: Just having one error is maybe bit a little bit excessive, but
@@ -23,7 +23,7 @@ let from_string str =
   | "put" -> Ok Put
   | "delete" -> Ok Delete
   | "connect" -> Ok Connect
-  | "option" -> Ok Option
+  | "options" -> Ok Options
   | "trace" -> Ok Trace
   | _ ->
       (* NOTE: we keep using [str] to be sure to report the proper input *)
@@ -37,7 +37,7 @@ let to_string = function
   | Put -> "PUT"
   | Delete -> "DELETE"
   | Connect -> "CONNECT"
-  | Option -> "OPTION"
+  | Options -> "OPTIONS"
   | Trace -> "TRACE"
 
 let equal a b =
@@ -48,7 +48,7 @@ let equal a b =
   | Put, Put
   | Delete, Delete
   | Connect, Connect
-  | Option, Option
+  | Options, Options
   | Trace, Trace ->
       true
   | Get, _
@@ -57,10 +57,17 @@ let equal a b =
   | Put, _
   | Delete, _
   | Connect, _
-  | Option, _
+  | Options, _
   | Trace, _ ->
       (* NOTE: Ensure exhaustivity of equality function. For the same reason of
          the usage of deconstructed records in [Response.equal]. Maybe
          excessive but hey. See:
          https://tarides.com/blog/2024-05-29-effective-ml-through-merlin-s-destruct-command/ *)
       false
+
+let error_equal a b =
+  match (a, b) with
+  | Unknown a, Unknown b -> String.equal a b
+
+let error_to_string = function
+  | Unknown m -> "Unknown method: " ^ m
