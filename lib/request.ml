@@ -53,7 +53,7 @@ let parse_request_line inp =
              response"
         ]
 
-let parse_headers (headers_str : string) =
+let parse_headers (_headers_str : string) =
   (* let rec parse_next curr_headers remaining_str = () in *)
   (* String.split_on_char "" *)
   (* turn the str into a string seq  *)
@@ -64,7 +64,7 @@ let parse_headers (headers_str : string) =
 
 } *)
 
-let rec handle_request (server : Server.server)
+let handle_request (_server : Server.server)
     (client : Unix.file_descr * Unix.sockaddr) =
   let sock, addr = client in
   let time_start_ms = Sys.time () *. 1000. in
@@ -74,13 +74,8 @@ let rec handle_request (server : Server.server)
 
   print_endline ("read " ^ string_of_int read ^ " from client");
   let response =
-    Response.build_response
-      {
-        message = Some "OK"
-      ; status = Some 200
-      ; body = Some "Hello"
-      ; reason = Some "OK"
-      }
+    Response.make ~message:"OK" ~body:"Hello" ~reason:"OK" 200
+    |> Response.to_empty_buffer
     |> Buffer.to_bytes
   in
   let _ = Unix.write sock response 0 (Bytes.length response) in
