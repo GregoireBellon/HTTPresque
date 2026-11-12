@@ -42,6 +42,19 @@ open struct
   let trace_from_string =
     Case.for_all ~name:"check trace" (is Method.Trace)
       [ "trace"; "TRACE"; "  Trace"; "  tRaCe "; "tracE" ]
+
+  let invalid_from_string =
+    let open Alcotest in
+    test_case "check invalid methods" `Quick (fun () ->
+        let expected =
+          [ "asdhsa"; "other"; "foo"; "  BaR" ]
+          |> List.map (fun x -> Error (Method.Unknown x))
+        and actual =
+          List.map Method.from_string [ "asdhsa"; "other"; "foo"; "  BaR" ]
+        in
+        check'
+          (list Testable.method_result)
+          ~msg:"Should reach validation errors" ~expected ~actual)
 end
 
 let cases =
@@ -55,4 +68,5 @@ let cases =
     ; connect_from_string
     ; options_from_string
     ; trace_from_string
+    ; invalid_from_string
     ] )
